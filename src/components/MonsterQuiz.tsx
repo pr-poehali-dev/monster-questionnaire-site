@@ -94,7 +94,7 @@ const MonsterQuiz = () => {
           </div>
         )}
 
-        {gamePhase === "asking" && (
+        {gamePhase === "asking" && questions && questions[currentQuestion] && (
           <QuestionCard
             question={questions[currentQuestion].question}
             options={questions[currentQuestion].options}
