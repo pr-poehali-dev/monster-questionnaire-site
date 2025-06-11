@@ -58,17 +58,25 @@ const MonsterQuiz = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
-  const [gamePhase, setGamePhase] = useState<"waiting" | "asking" | "finished">(
-    "waiting",
-  );
+  const [gamePhase, setGamePhase] = useState<
+    "waiting" | "asking" | "finished" | "deathQuestion"
+  >("waiting");
   const [showWelcome, setShowWelcome] = useState(true);
+  const [showDeathQuestion, setShowDeathQuestion] = useState(false);
 
   const handleExplosionComplete = () => {
-    // Reset all state and shuffle questions
+    // После взрыва показываем вопрос о смерти
+    setGamePhase("deathQuestion");
+    setShowDeathQuestion(true);
+  };
+
+  const handleDeathAnswer = () => {
+    // После ответа "НЕТ" начинаем новый раунд
     setCurrentQuestion(0);
     setAnswers([]);
     setGamePhase("waiting");
     setShowWelcome(true);
+    setShowDeathQuestion(false);
     setQuestions(shuffleArray(allQuestions).slice(0, 4));
   };
 
@@ -95,7 +103,7 @@ const MonsterQuiz = () => {
       }, 1000);
     } else {
       setTimeout(() => {
-        setGamePhase("finished");
+        setGamePhase("deathQuestion");
       }, 1500);
     }
   };
@@ -107,11 +115,15 @@ const MonsterQuiz = () => {
     setShowWelcome(true);
   };
 
+  const handleDeathAnswer = () => {
+    setGamePhase("finished");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-black to-gray-900 flex items-center justify-center p-4">
       <div className="max-w-2xl w-full">
         <MonsterAvatar
-          isAsking={gamePhase === "asking"}
+          isAsking={gamePhase === "asking" || gamePhase === "deathQuestion"}
           isRevealing={gamePhase === "finished"}
         />
 
@@ -132,6 +144,15 @@ const MonsterQuiz = () => {
             options={questions[currentQuestion].options}
             onAnswer={handleAnswer}
             isVisible={!showWelcome}
+          />
+        )}
+
+        {gamePhase === "deathQuestion" && showDeathQuestion && (
+          <QuestionCard
+            question="ТЫ ХОЧЕШЬ ЖИТЬ?"
+            options={["НЕТ"]}
+            onAnswer={handleDeathAnswer}
+            isVisible={true}
           />
         )}
 

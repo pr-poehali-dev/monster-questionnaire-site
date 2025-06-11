@@ -52,19 +52,21 @@ const FinalMessage = ({
     <div className={`animate-fade-in ${shake ? "animate-pulse" : ""}`}>
       <div className="bg-gradient-to-b from-red-900 to-black border-4 border-red-600 rounded-lg p-8 shadow-2xl shadow-red-900/80 text-center">
         <div className="text-4xl font-bold text-red-400 mb-4 font-mono tracking-wider">
-          ТЫ ВЫИГРАЛ
+          Я АКИНАТОР 666
         </div>
         <div className="text-6xl font-bold text-red-500 animate-pulse font-mono tracking-widest">
-          ПРОВАЛИВАЙ666
+          ТЕБЕ КАНЕЦ
         </div>
 
         {showSecondMessage && (
           <div className="mt-8 animate-fade-in">
             <div className="text-5xl font-bold text-white animate-pulse font-mono tracking-wider drop-shadow-2xl">
-              ТЫ САМ ЭТО СДЕЛАЛ
+              ТЫ ХОЧЕШЬ ЖИТЬ?
             </div>
-            <div className="mt-4 text-lg text-red-300 font-mono animate-pulse">
-              И теперь поздно что-то менять...
+            <div className="mt-6">
+              <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg font-mono text-xl border-2 border-red-400 animate-pulse">
+                НЕТ
+              </button>
             </div>
           </div>
         )}
