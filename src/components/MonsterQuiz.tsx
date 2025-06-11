@@ -8,7 +8,7 @@ interface Question {
   options: string[];
 }
 
-const questions: Question[] = [
+const allQuestions: Question[] = [
   {
     question: "Что ты делаешь когда темно?",
     options: [
@@ -35,15 +35,47 @@ const questions: Question[] = [
       "Я один из них",
     ],
   },
+  {
+    question: "Что ты видишь в зеркале?",
+    options: ["Себя", "Ничего", "Что-то странное", "Лучше не смотреть"],
+  },
+  {
+    question: "Как ты засыпаешь?",
+    options: ["Легко", "С трудом", "Проверив замки", "Не засыпаю"],
+  },
 ];
 
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
 const MonsterQuiz = () => {
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [gamePhase, setGamePhase] = useState<"waiting" | "asking" | "finished">(
     "waiting",
   );
   const [showWelcome, setShowWelcome] = useState(true);
+
+  const handleExplosionComplete = () => {
+    // Reset all state and shuffle questions
+    setCurrentQuestion(0);
+    setAnswers([]);
+    setGamePhase("waiting");
+    setShowWelcome(true);
+    setQuestions(shuffleArray(allQuestions).slice(0, 4));
+  };
+
+  // Initialize questions on mount
+  useEffect(() => {
+    setQuestions(shuffleArray(allQuestions).slice(0, 4));
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -105,10 +137,13 @@ const MonsterQuiz = () => {
 
         {gamePhase === "finished" && (
           <div className="space-y-6">
-            <FinalMessage isVisible={true} />
+            <FinalMessage
+              isVisible={true}
+              onExplosionComplete={handleExplosionComplete}
+            />
             <div className="text-center">
               <button
-                onClick={startOver}
+                onClick={handleExplosionComplete}
                 className="px-6 py-3 bg-gray-800 hover:bg-red-900 text-gray-300 hover:text-white border border-gray-700 hover:border-red-600 rounded-lg transition-all duration-300 font-mono"
               >
                 Начать заново

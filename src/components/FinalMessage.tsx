@@ -2,11 +2,17 @@ import { useEffect, useState } from "react";
 
 interface FinalMessageProps {
   isVisible: boolean;
+  onExplosionComplete?: () => void;
 }
 
-const FinalMessage = ({ isVisible }: FinalMessageProps) => {
+const FinalMessage = ({
+  isVisible,
+  onExplosionComplete,
+}: FinalMessageProps) => {
   const [shake, setShake] = useState(false);
   const [showSecondMessage, setShowSecondMessage] = useState(false);
+  const [showGlitch, setShowGlitch] = useState(false);
+  const [showExplosion, setShowExplosion] = useState(false);
 
   useEffect(() => {
     if (isVisible) {
@@ -18,12 +24,27 @@ const FinalMessage = ({ isVisible }: FinalMessageProps) => {
         setShowSecondMessage(true);
       }, 3000);
 
+      // Start glitch effects after final message
+      const glitchTimer = setTimeout(() => {
+        setShowGlitch(true);
+      }, 6000);
+
+      // Explosion and restart
+      const explosionTimer = setTimeout(() => {
+        setShowExplosion(true);
+        setTimeout(() => {
+          onExplosionComplete?.();
+        }, 2000);
+      }, 8000);
+
       return () => {
         clearTimeout(shakeTimer);
         clearTimeout(messageTimer);
+        clearTimeout(glitchTimer);
+        clearTimeout(explosionTimer);
       };
     }
-  }, [isVisible]);
+  }, [isVisible, onExplosionComplete]);
 
   if (!isVisible) return null;
 
@@ -58,6 +79,55 @@ const FinalMessage = ({ isVisible }: FinalMessageProps) => {
         {showSecondMessage && (
           <div className="absolute -inset-4 bg-red-900/20 rounded-xl blur-3xl animate-pulse -z-10" />
         )}
+
+        {/* Glitch effects overlay */}
+        {showGlitch && (
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute inset-0 bg-red-500 opacity-20 animate-ping" />
+            <div className="absolute inset-0 bg-green-500 opacity-10 animate-pulse" />
+            <div className="absolute inset-0 bg-blue-500 opacity-15 animate-bounce" />
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px)",
+                animation: "glitch 0.1s infinite",
+              }}
+            />
+          </div>
+        )}
+
+        {/* Explosion effect */}
+        {showExplosion && (
+          <div className="fixed inset-0 pointer-events-none z-50">
+            <div className="absolute inset-0 bg-white animate-ping" />
+            <div className="absolute inset-0 bg-red-500 animate-pulse" />
+            <div className="absolute inset-0 bg-yellow-500 opacity-70 animate-bounce" />
+          </div>
+        )}
+
+        <style jsx>{`
+          @keyframes glitch {
+            0% {
+              transform: translate(0);
+            }
+            20% {
+              transform: translate(-2px, 2px);
+            }
+            40% {
+              transform: translate(-2px, -2px);
+            }
+            60% {
+              transform: translate(2px, 2px);
+            }
+            80% {
+              transform: translate(2px, -2px);
+            }
+            100% {
+              transform: translate(0);
+            }
+          }
+        `}</style>
       </div>
     </div>
   );
